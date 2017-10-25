@@ -101,6 +101,10 @@ var (
 		"collect.info_schema.userstats",
 		"If running with userstat=1, set to true to collect user statistics",
 	).Default("false").Bool()
+	collectUserSummary = kingpin.Flag(
+		"collect.sys.usersummary",
+		"If sys database available collect user statistics(limited to n. of conneciton)",
+	).Default("false").Bool()
 	collectClientStat = kingpin.Flag(
 		"collect.info_schema.clientstats",
 		"If running with userstat=1, set to true to collect client statistics",
@@ -212,6 +216,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		PerfFileEvents:       filter(filters, "perf_schema.file_events", *collectPerfFileEvents),
 		PerfFileInstances:    filter(filters, "perf_schema.file_instances", *collectPerfFileInstances),
 		UserStat:             filter(filters, "info_schema.userstats", *collectUserStat),
+		UserSummary:          filter(filters, "sys.usersummary", *collectUserSummary),
 		ClientStat:           filter(filters, "info_schema.clientstats", *collectClientStat),
 		TableStat:            filter(filters, "info_schema.tablestats", *collectTableStat),
 		QueryResponseTime:    filter(filters, "info_schema.query_response_time", *collectQueryResponseTime),

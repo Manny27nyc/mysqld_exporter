@@ -50,6 +50,7 @@ type Collect struct {
 	PerfFileEvents       bool
 	PerfFileInstances    bool
 	UserStat             bool
+	UserSummary          bool
 	ClientStat           bool
 	TableStat            bool
 	QueryResponseTime    bool
@@ -332,6 +333,15 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) {
 			e.error.Set(1)
 		}
 		ch <- prometheus.MustNewConstMetric(scrapeDurationDesc, prometheus.GaugeValue, time.Since(scrapeTime).Seconds(), "collect.info_schema.userstats")
+	}
+	if e.collect.UserSummary {
+		scrapeTime = time.Now()
+		if err = ScrapeUserSummary(db, ch); err != nil {
+			log.Errorln("Error scraping for collect.sys.usersummary:", err)
+			e.scrapeErrors.WithLabelValues("collect.sys.usersummary").Inc()
+			e.error.Set(1)
+		}
+		ch <- prometheus.MustNewConstMetric(scrapeDurationDesc, prometheus.GaugeValue, time.Since(scrapeTime).Seconds(), "collect.sys.usersummary")
 	}
 	if e.collect.ClientStat {
 		scrapeTime = time.Now()
