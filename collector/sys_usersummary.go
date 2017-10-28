@@ -61,12 +61,13 @@ func ScrapeUserSummary(db *sql.DB, ch chan<- prometheus.Metric) error {
 		// value >= 0 is necessary due to upstream bugs: http://bugs.mysql.com/bug.php?id=75966
 		description := prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, sys, metricName),
-			"Concurrent connectio for user", nil, nil,
+			"Concurrent connection for user", []string{"user"}, nil,
 		)
 		ch <- prometheus.MustNewConstMetric(
 			description,
 			prometheus.GaugeValue,
 			value,
+			user,
 		)
 	}
 	return nil
