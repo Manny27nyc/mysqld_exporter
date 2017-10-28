@@ -8,6 +8,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+const (
+	// Subsystem.
+	sys = "sys_schema"
+)
+
 const sysCurrentConnectionQuery = `
 		SELECT
 		  user,
@@ -40,8 +45,8 @@ func ScrapeUserSummary(db *sql.DB, ch chan<- prometheus.Metric) error {
 	defer sysConnectionRows.Close()
 
 	var (
-		user    string
-		value   float64
+		user  string
+		value float64
 	)
 
 	for sysConnectionRows.Next() {
@@ -56,7 +61,7 @@ func ScrapeUserSummary(db *sql.DB, ch chan<- prometheus.Metric) error {
 		// value >= 0 is necessary due to upstream bugs: http://bugs.mysql.com/bug.php?id=75966
 		description := prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, sys, metricName),
-			comment, nil, nil,
+			"Concurrent connectio for user", nil, nil,
 		)
 		ch <- prometheus.MustNewConstMetric(
 			description,
