@@ -103,7 +103,11 @@ var (
 	).Default("false").Bool()
 	collectUserSummary = kingpin.Flag(
 		"collect.sys.usersummary",
-		"If sys database available collect user statistics(limited to n. of conneciton)",
+		"If sys database available collect user connection statistics(limited to n. of conneciton)",
+	).Default("false").Bool()
+	collectUserLatenctSummary = kingpin.Flag(
+		"collect.sys.user_latency_summary",
+		"If sys database available collect user latenct statistics(limited to n. of conneciton)",
 	).Default("false").Bool()
 	collectClientStat = kingpin.Flag(
 		"collect.info_schema.clientstats",
@@ -217,6 +221,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		PerfFileInstances:    filter(filters, "perf_schema.file_instances", *collectPerfFileInstances),
 		UserStat:             filter(filters, "info_schema.userstats", *collectUserStat),
 		UserSummary:          filter(filters, "sys.usersummary", *collectUserSummary),
+		UserSummaryLatency:   filter(filters, "sys.user_latency_summary", *collectUserLatenctSummary),
 		ClientStat:           filter(filters, "info_schema.clientstats", *collectClientStat),
 		TableStat:            filter(filters, "info_schema.tablestats", *collectTableStat),
 		QueryResponseTime:    filter(filters, "info_schema.query_response_time", *collectQueryResponseTime),

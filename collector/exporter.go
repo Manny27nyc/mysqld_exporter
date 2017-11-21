@@ -51,6 +51,7 @@ type Collect struct {
 	PerfFileInstances    bool
 	UserStat             bool
 	UserSummary          bool
+	UserSummaryLatency   bool
 	ClientStat           bool
 	TableStat            bool
 	QueryResponseTime    bool
@@ -342,6 +343,15 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) {
 			e.error.Set(1)
 		}
 		ch <- prometheus.MustNewConstMetric(scrapeDurationDesc, prometheus.GaugeValue, time.Since(scrapeTime).Seconds(), "collect.sys.usersummary")
+	}
+	if e.collect.UserSummaryLatency {
+		scrapeTime = time.Now()
+		if err = ScrapeUserSummaryByStatementLatency(db, ch); err != nil {
+			log.Errorln("Error scraping for collect.sys.user_latency_summary:", err)
+			e.scrapeErrors.WithLabelValues("collect.sys.user_latency_summary").Inc()
+			e.error.Set(1)
+		}
+		ch <- prometheus.MustNewConstMetric(scrapeDurationDesc, prometheus.GaugeValue, time.Since(scrapeTime).Seconds(), "collect.sys.user_latenct_summary")
 	}
 	if e.collect.ClientStat {
 		scrapeTime = time.Now()
