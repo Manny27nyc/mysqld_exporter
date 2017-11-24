@@ -13,6 +13,13 @@ import (
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
+const sysUserSummaryByLatencyQueryEscaped = `
+		SELECT
+		  user,
+			total_latency
+		  FROM sys.x\$user_summary_by_statement_latency
+		  ORDER BY total_latency DESC LIMIT 30
+		`
 
 func TestScrapeUserSummaryLatency(t *testing.T) {
 	db, mock, err := sqlmock.New()
@@ -27,7 +34,7 @@ func TestScrapeUserSummaryLatency(t *testing.T) {
 		AddRow("root", "18098903830").
 		AddRow("monitor", "12310391230").
 		AddRow("brighttalk", "2124203940")
-	mock.ExpectQuery(sysUserSummaryByLatencyQuery).WillReturnRows(rows)
+	mock.ExpectQuery(sysUserSummaryByLatencyQueryEscaped).WillReturnRows(rows)
 
 	ch := make(chan prometheus.Metric)
 	go func() {
